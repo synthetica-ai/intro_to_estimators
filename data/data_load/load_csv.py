@@ -5,11 +5,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 
-wine_path = Path(
-    "/home/jpriest/Desktop/Synthetica/Project/intro_to_estimators/data/winequality.csv")
-wines = pd.read_csv(wine_path)
-wines.head()
-
+wine_path = Path("/home/jpriest/Desktop/Synthetica/Project/intro_to_estimators/data/winequality.csv")
 
 # How to load csv data in tensorflow?
 
@@ -19,23 +15,40 @@ wines.head()
 # 3. Create tensor slices from the created dictionary.
 # Code Implementation
 
-wine_slices = tf.data.Dataset.from_tensor_slices(dict(wines))
-wine_slices = wine_slices.batch(1)
 
-for feature_batch in wine_slices.take(1):
-    for key, value in feature_batch.items():
-        print("{}: {}".format(key, value))
+def Dataset_creation(csv_path, print_flag=False):
+    """
+    Creating a tf Dataset from csv in csv_path.
+    The csv has the target label in the last column.
+    If print_flag = True, the Dataset is printed as well.
+
+    Args:
+        csv_path (Path): Path to the csv file.
+
+    Returns:
+        Dataset: a tf Dataset
+
+    """
+    df = pd.read_csv(csv_path)
+    target_label = df.columns[-1]
+    target_srs = df.pop(target_label)
+    dataset = tf.data.Dataset.from_tensor_slices((df.values, target_srs.values))
+    if print_flag:
+        for feature, target in dataset:
+            print('Features: {}, Target: {}'.format(feature, target))
+    return dataset
+
+
+wine_dataset = Dataset_creation(wine_path, True)
 
 
 # Second way: Using tf.data.experimental.make_csv_dataset function
 # The second way is useful for scaling up to a large set of files or when one needs a loader that integrates with Tensorflow and the tf.data API
 # The implementation involves using the tf.data.experimental.make_csv_dataset function.
 # The only column you need to identify explicitly is the one with the value that the model is intended to predict (named label_column here).
-
-
-wines['quality'].value_counts()
-LABEL_COLUMN = 'quality'
-LABELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  # possible labels from 3 to 8
+# wines_df['quality'].value_counts()
+# LABEL_COLUMN = 'quality'
+# LABELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  # possible labels from 3 to 8
 
 
 def get_dataset(file_path, label_column, **kwargs):
