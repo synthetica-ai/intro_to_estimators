@@ -1,11 +1,12 @@
 
-from pathlib import Path
+from pathlib import PurePosixPath
 
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 
-wine_path = Path("/home/jpriest/Desktop/Synthetica/Project/intro_to_estimators/data/winequality.csv")
+csv_path = "/home/jpriest/Desktop/Synthetica/Project/intro_to_estimators/data/winequality.csv"
+
 
 # How to load csv data in tensorflow?
 
@@ -16,10 +17,10 @@ wine_path = Path("/home/jpriest/Desktop/Synthetica/Project/intro_to_estimators/d
 # Code Implementation
 
 
-def Dataset_creation(csv_path, print_flag=False):
+def dataset_pandas_creation(csv_path, print_flag=False):
     """
-    Creating a tf Dataset from csv in csv_path.
-    The csv has the target label in the last column.
+    Creating a tf.data.Dataset object from a pandas dataframe.
+    The Dataset has the target label in the last column.
     If print_flag = True, the Dataset is printed as well.
 
     Args:
@@ -39,7 +40,7 @@ def Dataset_creation(csv_path, print_flag=False):
     return dataset
 
 
-wine_dataset = Dataset_creation(wine_path, True)
+method_one_dataset = dataset_pandas_creation(csv_path, True)
 
 
 # Second way: Using tf.data.experimental.make_csv_dataset function
@@ -47,32 +48,39 @@ wine_dataset = Dataset_creation(wine_path, True)
 # The implementation involves using the tf.data.experimental.make_csv_dataset function.
 # The only column you need to identify explicitly is the one with the value that the model is intended to predict (named label_column here).
 # wines_df['quality'].value_counts()
-# LABEL_COLUMN = 'quality'
-# LABELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  # possible labels from 3 to 8
+
+label_column = 'quality'
 
 
-def get_dataset(file_path, label_column, **kwargs):
+def dataset_experimental_csv(csv_path, **kwargs):
     """
     Creates a tf dataset from csv in file_path.
 
-    file_path : The path to the csv file including the csv.
+    file_path : The path to the csv file.
 
     label_columns : The target column label.
 
     """
 
     dataset = tf.data.experimental.make_csv_dataset(
-        file_path,
+        file_pattern=csv_path,
         batch_size=5,
         label_name=label_column,
         na_value="?",
         num_epochs=1,
+        ignore_errors=True,
         **kwargs)
 
     return dataset
 
 
-wine_tf_data = get_dataset(file_path=wine_path, label_column='quality')
+method_two_dataset = dataset_experimental_csv(csv_path)
+
+# Important! Loading works with csv_path as string and not as Path object. Path object not iterable error! Is it python's false?
+
+
+for batch, target_label in method_two_dataset.take(1):
+    print(target_label)
 
 
 def show_batch(dataset):
@@ -82,7 +90,3 @@ def show_batch(dataset):
 
 
 # TODO  Third Way : Using tf.data.TextLineDatasets
-# TODO:  Split the dataset
-# Two options:
-# 1. Load whole dataset and split with dataset.take(), dataset.skip()
-# 2. Split whole dataset before hand maybe with scikit learn?

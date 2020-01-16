@@ -2,7 +2,7 @@ import pandas as pd
 import tensorflow as tf
 
 
-def dataset_creation(csv_path, print_flag=False):
+def dataset_pandas_creation(csv_path, print_flag=False):
     """
     Creating a tf Dataset from csv in csv_path.
     The csv has the target label in the last column.
