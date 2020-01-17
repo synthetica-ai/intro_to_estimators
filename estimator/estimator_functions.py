@@ -24,27 +24,4 @@ def dataset_pandas_creation(csv_path, print_flag=False):
             print('Features: {}, Target: {}'.format(feature, target))
     return dataset
 
-
-def dataset_experimental_csv(csv_path, **kwargs):
-    """
-    Creates a tf dataset from csv in file_path.
-
-    file_path : The path to the csv file.
-
-    label_columns : The target column label.
-
-    """
-
-    dataset = tf.data.experimental.make_csv_dataset(
-        file_pattern=csv_path,
-        batch_size=5,
-        label_name=label_column,
-        na_value="?",
-        num_epochs=1,
-        ignore_errors=True,
-        **kwargs)
-
-    return dataset
-
-
 # TODO: add dataset_experimental_csv function
