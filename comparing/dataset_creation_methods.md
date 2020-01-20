@@ -22,7 +22,7 @@ Optional - lower level experimental.CsvDataset class
 
 
 Pros:
-- ssd
+-
 
 Cons:
 -  
@@ -36,13 +36,23 @@ Cons:
 
 The function **Returns**:
 
-A Dataset, where each element is a (features, labels) tuple that corresponds to a batch of batch_size CSV rows. The features dictionary maps feature column names to Tensors containing the corresponding column data, and labels is a Tensor containing the column data for the label column (target column) specified by label_name.
+A Dataset, where each element is a (features, labels) tuple that corresponds to a batch of batch_size CSV rows.
+
+ * features *dictionary* :
+
+    The features dictionary maps feature column names to Tensors containing the corresponding column data.
+
+ * labels *Tensor*:
+
+    labels is a Tensor containing the column data for the label column (target column) specified by label_name.
 
 *Functionality Remarks*:
 
-Creates batches(groups of rows) from the csv.
+1. The func creates batches(groups of rows) from the csv.
 
-Batching actually groups the Dataset to smaller parts!
+2. Batching practically groups the Dataset to smaller parts!
+
+3. Shuffling???
 
 
 
@@ -88,3 +98,38 @@ Cons:
 ## tf.data.TextLineDataset Class
 
 [Class Description](https://www.tensorflow.org/api_docs/python/tf/data/TextLineDataset)
+
+
+
+
+
+## Problems I Faced ##
+
+
+1. Use of Path class for specifying data location path.
+Loading data works with data_path as string. Tried to find how it could work with data_path as Path.
+
+
+
+
+
+
+## Solutions I Found ##
+
+Problem_1
+
+a.  Set all paths as Path objects and use string conversion inside the tf make_csv_dataset method like so:
+    ```python
+
+    tf.data.experimental.make_csv_dataset(file_pattern=str(data_path))
+
+    ```
+
+b.  Use glob pattern?? i
+
+
+
+## Ideas for Problems
+
+Problem_1 :
+    a.  Regex and parsing from user to suggest a specific csv to create a dataset.

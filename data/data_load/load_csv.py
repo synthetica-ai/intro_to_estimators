@@ -1,11 +1,17 @@
 
-from pathlib import PurePosixPath
+import glob
+import os
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 
-csv_path = "/home/jpriest/Desktop/Synthetica/Project/intro_to_estimators/data/winequality.csv"
+# Setting data_path as string or Path comparison
+
+data_path_as_string = "/home/jpriest/Desktop/Synthetica/Project/intro_to_estimators/data/winequality.csv"
+
+data_path_as_Path = Path(data_path_as_string)
 
 
 # How to load csv data in tensorflow?
@@ -17,20 +23,20 @@ csv_path = "/home/jpriest/Desktop/Synthetica/Project/intro_to_estimators/data/wi
 # Code Implementation
 
 
-def dataset_pandas_creation(csv_path, print_flag=False):
+def dataset_pandas_creation(data_path, print_flag=False):
     """
     Creating a tf.data.Dataset object from a pandas dataframe.
     The Dataset has the target label in the last column.
     If print_flag = True, the Dataset is printed as well.
 
     Args:
-        csv_path (Path): Path to the csv file.
+        data_path (Path or string): Path to the csv file.
 
     Returns:
         Dataset: a tf Dataset
 
     """
-    df = pd.read_csv(csv_path)
+    df = pd.read_csv(data_path)
     target_label = df.columns[-1]
     target_srs = df.pop(target_label)
     dataset = tf.data.Dataset.from_tensor_slices((df.values, target_srs.values))
@@ -40,30 +46,33 @@ def dataset_pandas_creation(csv_path, print_flag=False):
     return dataset
 
 
-method_one_dataset = dataset_pandas_creation(csv_path, True)
+method_one_dataset = dataset_pandas_creation(data_path_as_Path, True)
 
 
 # Second way: Using tf.data.experimental.make_csv_dataset function
 # The second way is useful for scaling up to a large set of files or when one needs a loader that integrates with Tensorflow and the tf.data API
 # The implementation involves using the tf.data.experimental.make_csv_dataset function.
 # The only column you need to identify explicitly is the one with the value that the model is intended to predict (named label_column here).
-# wines_df['quality'].value_counts()
+
 
 label_column = 'quality'
 
 
-def dataset_experimental_csv(csv_path, **kwargs):
-    """
-    Creates a tf dataset from csv in file_path.
+#csv_pattern = "/home/jpriest/Desktop/Synthetica/Project/intro_to_estimators/data/*.csv"
 
-    file_path : The path to the csv file.
+
+def dataset_experimental_csv(data_pattern, **kwargs):
+    """
+    Creates a tf dataset from csv in data_path.
+
+    data_path (string) : The path to the csv file as str.
 
     label_columns : The target column label.
 
     """
 
     dataset = tf.data.experimental.make_csv_dataset(
-        file_pattern=csv_path,
+        file_pattern=str(data_pattern),
         batch_size=5,
         label_name=label_column,
         na_value="?",
@@ -74,9 +83,9 @@ def dataset_experimental_csv(csv_path, **kwargs):
     return dataset
 
 
-method_two_dataset = dataset_experimental_csv(csv_path)
+method_two_dataset = dataset_experimental_csv(csv_pattern)
 
-# Important! Loading works with csv_path as string and not as Path object. Path object not iterable error! Is it python's false?
+# Important! Loading works with data_path as string and not as Path object. Path object not iterable error! Check problems in md file!
 
 
 for batch, target_label in method_two_dataset.take(1):
