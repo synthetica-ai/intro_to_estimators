@@ -47,4 +47,21 @@ def dataset_experimental_csv(csv_path, **kwargs):
     return dataset
 
 
-# TODO: add dataset_experimental_csv function
+def dataset_textline_creation(data_path):
+    """
+    A function that creates a tf.TextLineDataset from a csv file in data_path
+
+
+    Args:
+        data_path (type): the path to the dataset
+
+    Returns:
+        type: A tf.TextLineDataset
+
+    Raises:
+        Exception: description
+
+    """
+    str_data_path = str(data_path)
+    dataset_lines = tf.data.TextLineDataset(str_data_path)
+    return dataset_lines

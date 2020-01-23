@@ -1,6 +1,6 @@
 
-import glob
-import os
+# import glob
+import os  # os kai pathlib modules for combining changing directories and Path methods and attributes
 from pathlib import Path
 
 import numpy as np
@@ -48,7 +48,9 @@ def dataset_pandas_creation(data_path, print_flag=False):
 
 method_one_dataset = dataset_pandas_creation(data_path_as_Path, True)
 
+df = pd.read_csv(data_path_as_Path)
 
+pd.value_counts(df['quality'] == 8)
 # Second way: Using tf.data.experimental.make_csv_dataset function
 # The second way is useful for scaling up to a large set of files or when one needs a loader that integrates with Tensorflow and the tf.data API
 # The implementation involves using the tf.data.experimental.make_csv_dataset function.
@@ -58,7 +60,7 @@ method_one_dataset = dataset_pandas_creation(data_path_as_Path, True)
 label_column = 'quality'
 
 
-#csv_pattern = "/home/jpriest/Desktop/Synthetica/Project/intro_to_estimators/data/*.csv"
+# csv_pattern = "/home/jpriest/Desktop/Synthetica/Project/intro_to_estimators/data/*.csv"
 
 
 def dataset_experimental_csv(data_pattern, **kwargs):
@@ -83,7 +85,7 @@ def dataset_experimental_csv(data_pattern, **kwargs):
     return dataset
 
 
-method_two_dataset = dataset_experimental_csv(csv_pattern)
+method_two_dataset = dataset_experimental_csv(data_path_as_Path)
 
 # Important! Loading works with data_path as string and not as Path object. Path object not iterable error! Check problems in md file!
 
@@ -98,4 +100,65 @@ def show_batch(dataset):
             print("{:20s}: {}".format(key, value.numpy()))
 
 
-# TODO  Third Way : Using tf.data.TextLineDatasets
+show_batch(method_two_dataset)
+
+
+# Third Way : Using tf.data.TextLineDataset
+
+# Needs to load each line of the csv separately and add it to the dataset one by one (-)
+
+
+# Dataset Creation
+def dataset_textline_creatino(data_path):
+    """
+    A function that creates a tf.TextLineDataset from a csv file in data_path
+
+
+    Args:
+        data_path (type): description
+
+    Returns:
+        type: description
+
+    Raises:
+        Exception: description
+
+    """
+    str_data_path = str(data_path)
+    dataset_lines = tf.data.TextLineDataset(str_data_path)
+    return dataset_lines
+
+# Printing first five lines (each line is a tensor of shape() and dtype=string)
+# Eager Execution allows you to conver each line to a numpy array with line.numpy() method
+
+
+for line in dataset_lines.take(1):
+    print(line)
+
+
+# create func to exclude some lines of the dataset (keep lines with quality=8)
+
+
+def best_quality(line):
+    """
+    A short description.
+
+    A bit longer description.
+
+    Args:
+        variable (type): description
+
+    Returns:
+        type: description
+
+    Raises:
+        Exception: description
+
+    """
+
+    return tf.equal(tf.strings.substr(line, -1, 1), "8")
+
+# re
+
+
+best_wines = dataset_lines.skip(1).filter(best_quality)
