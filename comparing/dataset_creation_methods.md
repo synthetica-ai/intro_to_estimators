@@ -70,22 +70,27 @@ Cons:
 -    
 
 
-## tf.data.TextLineDataset
+## tf.data.TextLineDataset Class
 
+[Class Description](https://www.tensorflow.org/api_docs/python/tf/data/TextLineDataset)
 
-*Questions*
-
-- Reads lines and return them as text?
-- Are numbers represented as strings?
-- If yes then I need string to float conversion! possible con!
+[tutorial_1](https://www.tensorflow.org/tutorials/load_data/text)
+[tutorial_2](https://www.tensorflow.org/guide/data#consuming_text_data)
 
 
 *Functionality Remarks*
 
-* a TextLineDataset yields every line of each file. **con(-)**
-    -   Lines such as headers or comments can be removed using the Dataset.skip() or Dataset.filter() transformations.
+* TextLineDataset is designed to create a dataset from one or more text files. Given one or more text filenames, it will produce one string-valued element per line for those files.
 
-* numbers as strings?
+    - Practically every line of the file is transformed to a string by the TLD class methods
+    - Useful for line-based data (like poetry or erro_logs)
+    - How is a line defined in a text file?? (by end of line character??)[possible_answer](https://en.wikipedia.org/wiki/Line_(text_file))
+    -
+
+* A TextLineDataset yields every line of each file. **(-)**
+    -   Lines such as headers or comments can be removed using the Dataset.skip() or Dataset.filter() transformations.
+    -    
+* Numbers are presented as strings! **(-)** (conversion to int or float neeeded)
 
 
 
@@ -95,15 +100,20 @@ Cons:
 
 
 
-## tf.data.TextLineDataset Class
 
-[Class Description](https://www.tensorflow.org/api_docs/python/tf/data/TextLineDataset)
+*Questions*
+
+- Reads lines and return them as text?
+- Are numbers represented as strings?
+- If yes then I need string to float conversion! possible con!
 
 
 
 
 
-## Problems I Faced ##
+
+
+# Problems I Faced
 
 
 1. Use of Path class for specifying data location path.
@@ -114,7 +124,7 @@ Loading data works with data_path as string. Tried to find how it could work wit
 
 
 
-## Solutions I Found ##
+# Solutions to Problems
 
 Problem_1
 
@@ -129,7 +139,7 @@ b.  Use glob pattern?? i
 
 
 
-## Ideas for Problems
+# Ideas for Future Work
 
 Problem_1 :
     a.  Regex and parsing from user to suggest a specific csv to create a dataset.
