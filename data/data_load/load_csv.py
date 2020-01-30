@@ -109,7 +109,7 @@ show_batch(method_two_dataset)
 
 
 # Dataset Creation
-def dataset_textline_creatino(data_path):
+def dataset_textline_creating(data_path):
     """
     A function that creates a tf.TextLineDataset from a csv file in data_path
 
