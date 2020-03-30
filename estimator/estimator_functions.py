@@ -1,50 +1,54 @@
-import pandas as pd
-import tensorflow as tf
+'''
+Custom Estimator Components
+
+1. input_func : transforms raw data to Dataset objects.
+
+2. feature_func : function that defines the feature cols of the datasets
+
+3. model_func : heart of the estimator. This func specifies the type of model used to make predictions and its characteristics e.g DNN with k layers so on and so forth
+
+4. train_func, eval_func, test_func : functions relevant to implement the training, evaluation and testing procedures.
 
 
-def dataset_pandas_creation(csv_path, print_flag=False):
-    """
-    Creating a tf Dataset from csv in csv_path.
-    The csv has the target label in the last column.
-    If print_flag = True, the Dataset is printed as well.
+'''
 
-    Args:
-        csv_path (Path): Path to the csv file.
-
-    Returns:
-        Dataset: a tf Dataset
-
-    """
-    df = pd.read_csv(csv_path)
-    target_label = df.columns[-1]
-    target_srs = df.pop(target_label)
-    dataset = tf.data.Dataset.from_tensor_slices((df.values, target_srs.values))
-    if print_flag:
-        for feature, target in dataset:
-            print('Features: {}, Target: {}'.format(feature, target))
-    return dataset
+# input_func
 
 
-def dataset_experimental_csv(csv_path, **kwargs):
-    """
-    Creates a tf dataset from csv in file_path.
-
-    file_path : The path to the csv file.
-
-    label_columns : The target column label.
-
-    """
-
-    dataset = tf.data.experimental.make_csv_dataset(
-        file_pattern=csv_path,
-        batch_size=5,
-        label_name=label_column,
-        na_value="?",
-        num_epochs=1,
-        ignore_errors=True,
-        **kwargs)
-
-    return dataset
+def input_func(dataset):
+    ...  # manipulate dataset, extracting the feature dict and the label
+    return feature_dict, label
 
 
-# TODO: add dataset_experimental_csv function
+# Define the feature columns including their names and type of data they contain.
+
+def feature_func(arg):
+
+    population = tf.feature_column.numeric_column('population')
+    crime_rate = tf.feature_column.numeric_column('crime_rate')
+    median_education = tf.feature_column.numeric_column(
+        'median_education', normalizer_fn=lambda x: x - global_education_mean)
+
+
+# Instantiate an estimator, by passing in the feature columns.
+
+
+def model_func(arg):
+    # using premade at first then extend it to custom
+    estimator = tf.estimator.LinearClassifier(feature_columns=[population, crime_rate, median_education])
+
+
+# `input_fn` is the function created in Step 1
+
+
+def train_func(arg):
+    estimator.train(input_func=my_training_set, steps=2000)
+
+
+def eval_func(arg):
+    estimator.eval(input_func=my_eval_set, .....)
+    pass
+
+
+def test_func(arg):
+    estimator.test(input_func=my_test_set, .....)
